@@ -1,0 +1,27 @@
+function acbd_manager;
+interface of acbd_manager {
+	out bool activate_ab;
+	out bool activate_cd;
+}
+
+policy am of acbd_manager {
+	internals {
+		dtimer_t v;
+	}
+
+	states {
+
+		s0 {
+			-> s0 on (activate_ab and v < 3);
+			-> violation on (!activate_ab and v < 3) recover activate_ab := 1;
+			-> s1 on v >= 3: v := 0;
+		}
+
+		s1 {
+			-> s1 on (activate_cd and v < 3);
+			-> violation on (!activate_cd and v < 3) recover activate_cd := 1;
+			-> s0 on v >= 3: v := 0;
+		}
+
+	}
+}

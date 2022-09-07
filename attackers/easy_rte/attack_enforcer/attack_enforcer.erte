@@ -1,0 +1,53 @@
+function attack_enforcer;
+interface of attack_enforcer {
+	out bool abort, run, new, end; //out here means that they're going from CONTROLLER to PLANT
+}
+
+policy attack_1 of attack_enforcer {
+	//internals {
+	//}
+
+	states {
+
+		s0 {
+			-> s0 on (!abort);
+
+			-> violation on (abort) recover abort := 0;	
+		}
+
+	}
+}
+
+policy jam_time of attack_enforcer {
+	internals {
+		dtimer_t t := 0;
+
+		constant uint64_t start_jam := 10;
+		constant uint64_t end_jam := 20;
+	
+	}
+
+	states {
+
+		s0 {
+			-> s0 on (t < start_jam or t > end_jam);
+			-> s1 on (t >= start_jam and t <= end_jam);
+
+			-> violation on (run and t >= start_jam and t <= end_jam) recover run := 0;	
+			-> violation on (new and t >= start_jam and t <= end_jam) recover new := 0;	
+			-> violation on (end and t >= start_jam and t <= end_jam) recover end := 0;	
+			-> violation on (abort and t >= start_jam and t <= end_jam) recover abort := 0;	
+		}
+
+		s1 {
+			-> s0 on (t < start_jam or t > end_jam);
+			-> s1 on (t >= start_jam and t <= end_jam);
+
+			-> violation on (run) recover run := 0;	
+			-> violation on (new) recover new := 0;	
+			-> violation on (end) recover end := 0;	
+			-> violation on (abort) recover abort := 0;	
+		}
+
+	}
+}

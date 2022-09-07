@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EnforcedFunction Name="attack_enforcer">
+	<Interface>
+		<Output Name="abort" Type="bool" Constant="false" Comment=""></Output>
+		<Output Name="run" Type="bool" Constant="false" Comment=""></Output>
+		<Output Name="new" Type="bool" Constant="false" Comment=""></Output>
+		<Output Name="end" Type="bool" Constant="false" Comment=""></Output>
+	</Interface>
+	<Policy Name="attack_1">
+		<InternalVars></InternalVars>
+		<Machine>
+			<PState>s0</PState>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>s0</Destination>
+				<Condition>( !abort )</Condition>
+			</PTransition>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>violation</Destination>
+				<Condition>( abort )</Condition>
+				<Recover>
+					<VarName>abort</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+		</Machine>
+	</Policy>
+	<Policy Name="jam_time">
+		<InternalVars>
+			<VarDeclaration Name="t" Type="dtimer_t" Constant="false" InitialValue="0" Comment=""></VarDeclaration>
+			<VarDeclaration Name="start_jam" Type="uint64_t" Constant="true" InitialValue="10" Comment=""></VarDeclaration>
+			<VarDeclaration Name="end_jam" Type="uint64_t" Constant="true" InitialValue="20" Comment=""></VarDeclaration>
+		</InternalVars>
+		<Machine>
+			<PState>s0</PState>
+			<PState>s1</PState>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>s0</Destination>
+				<Condition>( t &lt; start_jam or t &gt; end_jam )</Condition>
+			</PTransition>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>s1</Destination>
+				<Condition>( t &gt;= start_jam and t &lt;= end_jam )</Condition>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>s0</Destination>
+				<Condition>( t &lt; start_jam or t &gt; end_jam )</Condition>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>s1</Destination>
+				<Condition>( t &gt;= start_jam and t &lt;= end_jam )</Condition>
+			</PTransition>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>violation</Destination>
+				<Condition>( run and t &gt;= start_jam and t &lt;= end_jam )</Condition>
+				<Recover>
+					<VarName>run</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>violation</Destination>
+				<Condition>( new and t &gt;= start_jam and t &lt;= end_jam )</Condition>
+				<Recover>
+					<VarName>new</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>violation</Destination>
+				<Condition>( end and t &gt;= start_jam and t &lt;= end_jam )</Condition>
+				<Recover>
+					<VarName>end</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>violation</Destination>
+				<Condition>( abort and t &gt;= start_jam and t &lt;= end_jam )</Condition>
+				<Recover>
+					<VarName>abort</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>violation</Destination>
+				<Condition>( run )</Condition>
+				<Recover>
+					<VarName>run</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>violation</Destination>
+				<Condition>( new )</Condition>
+				<Recover>
+					<VarName>new</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>violation</Destination>
+				<Condition>( end )</Condition>
+				<Recover>
+					<VarName>end</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>violation</Destination>
+				<Condition>( abort )</Condition>
+				<Recover>
+					<VarName>abort</VarName>
+					<Value>0</Value>
+				</Recover>
+			</PTransition>
+		</Machine>
+	</Policy>
+</EnforcedFunction>

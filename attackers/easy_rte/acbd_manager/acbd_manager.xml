@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EnforcedFunction Name="acbd_manager">
+	<Interface>
+		<Output Name="activate_ab" Type="bool" Constant="false" Comment=""></Output>
+		<Output Name="activate_cd" Type="bool" Constant="false" Comment=""></Output>
+	</Interface>
+	<Policy Name="am">
+		<InternalVars>
+			<VarDeclaration Name="v" Type="dtimer_t" Constant="false" Comment=""></VarDeclaration>
+		</InternalVars>
+		<Machine>
+			<PState>s0</PState>
+			<PState>s1</PState>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>s0</Destination>
+				<Condition>( activate_ab and v &lt; 3 )</Condition>
+			</PTransition>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>s1</Destination>
+				<Condition>v &gt;= 3</Condition>
+				<Expressions>
+					<VarName>v</VarName>
+					<Value>0</Value>
+				</Expressions>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>s1</Destination>
+				<Condition>( activate_cd and v &lt; 3 )</Condition>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>s0</Destination>
+				<Condition>v &gt;= 3</Condition>
+				<Expressions>
+					<VarName>v</VarName>
+					<Value>0</Value>
+				</Expressions>
+			</PTransition>
+			<PTransition>
+				<Source>s0</Source>
+				<Destination>violation</Destination>
+				<Condition>( !activate_ab and v &lt; 3 )</Condition>
+				<Recover>
+					<VarName>activate_ab</VarName>
+					<Value>1</Value>
+				</Recover>
+			</PTransition>
+			<PTransition>
+				<Source>s1</Source>
+				<Destination>violation</Destination>
+				<Condition>( !activate_cd and v &lt; 3 )</Condition>
+				<Recover>
+					<VarName>activate_cd</VarName>
+					<Value>1</Value>
+				</Recover>
+			</PTransition>
+		</Machine>
+	</Policy>
+</EnforcedFunction>
